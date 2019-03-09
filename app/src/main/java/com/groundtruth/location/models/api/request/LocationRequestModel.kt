@@ -4,6 +4,6 @@ import com.groundtruth.location.models.Location
 
 class LocationRequestModel {
 
-    var locationArray: List<Location>? = null
+    var locationArray: List<Location> = emptyList()
 
 }

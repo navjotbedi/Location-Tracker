@@ -2,6 +2,7 @@ package com.groundtruth.location.managers
 
 import android.content.Context
 import com.groundtruth.location.models.Location
+import com.groundtruth.location.models.api.request.LocationRequestModel
 import com.groundtruth.location.utils.Config
 import io.reactivex.Observable
 import io.realm.Realm
@@ -13,6 +14,7 @@ class DBManager(context: Context) {
         Realm.init(context)
     }
 
+    // Store location to the database
     fun insertLocation(location: android.location.Location): Observable<Boolean> {
         return Observable.just(location)
             .flatMap {
@@ -33,6 +35,25 @@ class DBManager(context: Context) {
             }
     }
 
+    fun getLocationRequestModel(): Observable<LocationRequestModel> {
+        return Observable.create {
+            getRealmInstance().use { realm ->
+                val savedLocations = realm.where<Location>().findAll()
+                if (savedLocations.isNotEmpty()) {
+                    val locationRequestModel = LocationRequestModel()
+                    savedLocations.forEach {
+                        val location = Location(it.latitude, it.longitude)
+                        locationRequestModel.locationArray += location
+                    }
+                    it.onNext(locationRequestModel)
+                } else {
+                    // it.onNext() // TODO handle returns
+                }
+            }
+        }
+    }
+
+    // Delete all the saved location history
     fun stashLocations(): Observable<Boolean> {
         return Observable.create<Boolean> {
             getRealmInstance().use { realm ->
