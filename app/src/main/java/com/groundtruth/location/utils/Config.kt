@@ -4,4 +4,15 @@ class Config {
     object SharedPreferences {
         const val PROPERTY_PREF = "PREFERENCE_DEFAULT"
     }
+
+    object Endpoints {
+        const val BASE_PATH = "/api/"
+
+        const val SEND_LOCATION = BASE_PATH + "location/"
+    }
+
+    object DBColumns {
+        const val LATITUDE_COLUMN = "latitude"
+        const val LONGITUDE_COLUMN = "longitude"
+    }
 }

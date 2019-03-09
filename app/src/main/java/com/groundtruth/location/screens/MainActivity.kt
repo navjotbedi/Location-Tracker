@@ -10,6 +10,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.groundtruth.location.R
 import com.groundtruth.location.utils.Constants.Companion.PERMISSIONS_REQUEST_LOCATION
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import com.groundtruth.location.utils.Constants.Companion.PLAY_SERVICES_RESOLUTION_REQUEST
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -43,6 +47,23 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+
+    private fun checkPlayServices(): Boolean {
+        val apiAvailability = GoogleApiAvailability.getInstance()
+        val resultCode = apiAvailability.isGooglePlayServicesAvailable(this)
+
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+            } else {
+                finish()
+            }
+
+            return false
+        }
+
+        return true
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
