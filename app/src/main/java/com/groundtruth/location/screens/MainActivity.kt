@@ -35,11 +35,9 @@ class MainActivity : AppCompatActivity() {
             if (!isPermissionGranted()) {
                 askPermission()
             } else {
-                if (!preferenceManager.isTrackingEnable()) {
-                    locationManager.startLocationTracking()
-                } else {
-                    locationManager.stopLocationTracking()
-                }
+                val isTrackingEnabled = preferenceManager.isTrackingEnable()
+                if (isTrackingEnabled) locationManager.stopLocationTracking() else locationManager.startLocationTracking()
+                preferenceManager.changeTrackingMode(!isTrackingEnabled)
                 updateButtonText()
             }
         }

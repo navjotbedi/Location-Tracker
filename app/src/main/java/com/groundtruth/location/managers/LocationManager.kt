@@ -10,7 +10,7 @@ class LocationManager {
 
     fun startLocationTracking() {
         val locationWork = PeriodicWorkRequest.Builder(
-            LocationWorker::class.java, 5, TimeUnit.SECONDS
+            LocationWorker::class.java, 15, TimeUnit.MINUTES
         ).addTag(LocationWorker.TAG).build()
         WorkManager.getInstance().enqueue(locationWork)
     }
