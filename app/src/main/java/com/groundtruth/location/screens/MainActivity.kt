@@ -8,16 +8,21 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.groundtruth.location.R
-import com.groundtruth.location.utils.Constants.Companion.PERMISSIONS_REQUEST_LOCATION
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.groundtruth.location.R
+import com.groundtruth.location.managers.LocationManager
+import com.groundtruth.location.managers.PreferenceManager
+import com.groundtruth.location.utils.Constants.Companion.PERMISSIONS_REQUEST_LOCATION
 import com.groundtruth.location.utils.Constants.Companion.PLAY_SERVICES_RESOLUTION_REQUEST
+import org.koin.android.ext.android.inject
 
 
 class MainActivity : AppCompatActivity() {
 
     private var locationButton: TextView? = null
+    private val locationManager: LocationManager by inject()
+    private val preferenceManager: PreferenceManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,15 +32,20 @@ class MainActivity : AppCompatActivity() {
         updateButtonText()
 
         findViewById<View>(R.id.location_btn).setOnClickListener {
-            if(!isPermissionGranted()){
+            if (!isPermissionGranted()) {
                 askPermission()
-            }else{
-                // Start Location Tracking
+            } else {
+                if (!preferenceManager.isTrackingEnable()) {
+                    locationManager.startLocationTracking()
+                } else {
+                    locationManager.stopLocationTracking()
+                }
+                updateButtonText()
             }
         }
     }
 
-    private fun askPermission(){
+    private fun askPermission() {
         if (!isPermissionGranted()) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
 
@@ -83,8 +93,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateButtonText() {
         if (isPermissionGranted()) {
-            locationButton?.setText(R.string.txt_start_location_tracking)
+            if (!preferenceManager.isTrackingEnable()) {
+                locationButton?.setText(R.string.txt_start_location_tracking)
+            } else {
+                locationButton?.setText(R.string.txt_stop_location_tracking)
+            }
         } else {
+            locationManager.stopLocationTracking()
             locationButton?.setText(R.string.txt_grant_permission)
         }
     }

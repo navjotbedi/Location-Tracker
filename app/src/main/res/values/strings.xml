@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Location Tracker</string>
     <string name="txt_start_location_tracking">Start Location Tracking</string>
+    <string name="txt_stop_location_tracking">Stop Location Tracking</string>
     <string name="txt_grant_permission">Location Permission Required</string>
 
 </resources>
