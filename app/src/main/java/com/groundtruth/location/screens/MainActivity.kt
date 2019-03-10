@@ -52,10 +52,14 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks,
 
     private fun initUI(){
         locationButton = findViewById(R.id.location_btn)
-        updateButtonText()
         if(preferenceManager.isTrackingEnable() && isPermissionGranted()){
             locationManager.startLocationTracking(getPendingIntent())
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateButtonText()
     }
 
     private fun getPendingIntent(): PendingIntent {
