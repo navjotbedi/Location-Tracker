@@ -54,6 +54,6 @@ fun provideOkHttpClient(): OkHttpClient {
 }
 
 fun provideRestApi(okHttpClient: OkHttpClient, gson: Gson): AppRestApi {
-    val retrofit = configureRetrofit(Config.Endpoints.BASE_PATH, okHttpClient, gson)
+    val retrofit = configureRetrofit(Config.Endpoints.BASE_URL, okHttpClient, gson)
     return retrofit.create(AppRestApi::class.java)
 }

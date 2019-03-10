@@ -8,6 +8,9 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +25,7 @@ import com.groundtruth.location.R
 import com.groundtruth.location.managers.LocationManager
 import com.groundtruth.location.managers.PreferenceManager
 import com.groundtruth.location.services.LocationUpdateBroadcastReceiver
+import com.groundtruth.location.utils.Config
 import com.groundtruth.location.utils.Constants.Companion.PERMISSIONS_REQUEST_LOCATION
 import com.groundtruth.location.utils.LogUtils
 import com.groundtruth.location.utils.Utils
@@ -41,10 +45,28 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        initUI()
+        buildGoogleApiClient()
+        setupClickListeners()
+    }
+
+    private fun initUI(){
         locationButton = findViewById(R.id.location_btn)
         updateButtonText()
-        buildGoogleApiClient()
+        if(preferenceManager.isTrackingEnable() && isPermissionGranted()){
+            locationManager.startLocationTracking(getPendingIntent())
+        }
+    }
 
+    private fun getPendingIntent(): PendingIntent {
+        val intent = Intent(this, LocationUpdateBroadcastReceiver::class.java)
+        intent.action = LocationUpdateBroadcastReceiver.ACTION_LOCATION_UPDATES
+        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+    }
+
+    // UI Components
+
+    private fun setupClickListeners() {
         findViewById<View>(R.id.location_btn).setOnClickListener {
             if (!isPermissionGranted()) {
                 askPermission()
@@ -57,24 +79,6 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks,
                 }
                 preferenceManager.changeTrackingMode(!isTrackingEnabled)
                 updateButtonText()
-            }
-        }
-    }
-
-    private fun askPermission() {
-        if (!isPermissionGranted()) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                Snackbar.make(
-                    findViewById(R.id.activity_main),
-                    R.string.permission_rationale,
-                    Snackbar.LENGTH_INDEFINITE
-                )
-                    .setAction(R.string.ok) {
-                        requestPermission()
-                    }
-                    .show()
-            } else {
-                requestPermission()
             }
         }
     }
@@ -92,6 +96,24 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks,
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.dev_info -> {
+                Utils.openWebPage(Config.Extras.DEVELOPER_PROFILE, this)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+
+    // Google API Client
 
     private fun buildGoogleApiClient() {
         if (googleApiClient != null) {
@@ -120,14 +142,26 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks,
         )
     }
 
-    private fun getPendingIntent(): PendingIntent {
-        val intent = Intent(this, LocationUpdateBroadcastReceiver::class.java)
-        intent.action = LocationUpdateBroadcastReceiver.ACTION_LOCATION_UPDATES
-        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-    }
-
 
     // Permissions
+
+    private fun askPermission() {
+        if (!isPermissionGranted()) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Snackbar.make(
+                    findViewById(R.id.activity_main),
+                    R.string.permission_rationale,
+                    Snackbar.LENGTH_INDEFINITE
+                )
+                    .setAction(R.string.ok) {
+                        requestPermission()
+                    }
+                    .show()
+            } else {
+                requestPermission()
+            }
+        }
+    }
 
     private fun requestPermission() {
         ActivityCompat.requestPermissions(

@@ -8,7 +8,8 @@ class Config {
     }
 
     object Endpoints {
-        const val BASE_PATH = "/api/"
+        const val BASE_URL = "https://www.google.com"
+        private const val BASE_PATH = "/api/"
 
         const val SEND_LOCATION = BASE_PATH + "location/"
     }
@@ -22,5 +23,10 @@ class Config {
         const val UPDATE_INTERVAL = (10 * 1000).toLong()
         const val FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2
         const val MAX_WAIT_TIME = UPDATE_INTERVAL * 3
+        const val MIN_UPLOAD_LOCATION = 50
+    }
+
+    object Extras {
+        const val DEVELOPER_PROFILE = "https://www.linkedin.com/in/navjotsinghbedi/"
     }
 }

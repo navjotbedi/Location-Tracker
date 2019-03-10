@@ -15,21 +15,22 @@ class DBManager(context: Context) {
     }
 
     // Store location to the database
-    fun insertLocation(location: android.location.Location): Observable<Boolean> {
-        return Observable.just(location)
+    fun insertLocations(locations: List<android.location.Location>): Observable<Boolean> {
+        return Observable.just(locations)
             .flatMap {
                 return@flatMap Observable.create<Boolean> {
                     getRealmInstance().use { realm ->
-                        // Insert new record
-                        if (!isDuplicate(location)) {
-                            val dbLocation = Location(location.latitude, location.longitude)
-                            realm.beginTransaction()
-                            realm.copyToRealm(dbLocation)
-                            realm.commitTransaction()
-                            it.onNext(true)
-                        } else {
-                            it.onNext(false)
+                        var isDuplicate = true
+                        realm.beginTransaction()
+                        for (location in locations) {
+                            if (!isDuplicate(location)) {
+                                if (isDuplicate) isDuplicate = false
+                                val dbLocation = Location(location.latitude, location.longitude)
+                                realm.copyToRealm(dbLocation)
+                            }
                         }
+                        realm.commitTransaction()
+                        it.onNext(!isDuplicate)
                     }
                 }
             }
@@ -39,16 +40,14 @@ class DBManager(context: Context) {
         return Observable.create {
             getRealmInstance().use { realm ->
                 val savedLocations = realm.where<Location>().findAll()
-                if (savedLocations.isNotEmpty() && savedLocations.count() > 50) {
-                    val locationRequestModel = LocationRequestModel()
+                val locationRequestModel = LocationRequestModel()
+                if (savedLocations.isNotEmpty() && savedLocations.count() > Config.Location.MIN_UPLOAD_LOCATION) {
                     savedLocations.forEach {
                         val location = Location(it.latitude, it.longitude)
                         locationRequestModel.locationArray += location
                     }
-                    it.onNext(locationRequestModel)
-                } else {
-                    
                 }
+                it.onNext(locationRequestModel)
             }
         }
     }
