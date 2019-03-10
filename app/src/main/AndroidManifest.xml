@@ -4,8 +4,9 @@
           package="com.groundtruth.location">
 
     <dist:module dist:instant="true"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
             android:allowBackup="true"
@@ -24,10 +25,17 @@
             </intent-filter>
         </activity>
 
-        <service
-                android:name=".services.LocationService"
-                android:permission="android.permission.BIND_JOB_SERVICE"
-                android:exported="false"/>
+        <receiver android:name=".services.LocationUpdateBroadcastReceiver"
+                  android:exported="true">
+            <intent-filter>
+                <action android:name="com.groundtruth.location.services.services.LocationUpdateBroadcastReceiver.ACTION_LOCATION_UPDATES"/>
+            </intent-filter>
+        </receiver>
+
+        <meta-data
+                android:name="io.fabric.ApiKey"
+                android:value="a48d13d7626db6f4389027926df6c1267e62fd36"
+        />
     </application>
 
 </manifest>

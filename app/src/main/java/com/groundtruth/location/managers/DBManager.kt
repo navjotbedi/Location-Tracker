@@ -39,7 +39,7 @@ class DBManager(context: Context) {
         return Observable.create {
             getRealmInstance().use { realm ->
                 val savedLocations = realm.where<Location>().findAll()
-                if (savedLocations.isNotEmpty()) {
+                if (savedLocations.isNotEmpty() && savedLocations.count() > 50) {
                     val locationRequestModel = LocationRequestModel()
                     savedLocations.forEach {
                         val location = Location(it.latitude, it.longitude)
@@ -47,7 +47,7 @@ class DBManager(context: Context) {
                     }
                     it.onNext(locationRequestModel)
                 } else {
-                    // it.onNext() // TODO handle returns
+                    
                 }
             }
         }

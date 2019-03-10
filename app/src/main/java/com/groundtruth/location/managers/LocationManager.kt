@@ -1,22 +1,25 @@
 package com.groundtruth.location.managers
 
-import androidx.work.PeriodicWorkRequest
-import androidx.work.WorkManager
-import com.groundtruth.location.services.LocationWorker
-import java.util.concurrent.TimeUnit
+import android.annotation.SuppressLint
+import android.app.PendingIntent
+import android.content.Context
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
 
+class LocationManager(private val context: Context, private val locationRequest: LocationRequest) {
 
-class LocationManager {
-
-    fun startLocationTracking() {
-        val locationWork = PeriodicWorkRequest.Builder(
-            LocationWorker::class.java, 15, TimeUnit.MINUTES
-        ).addTag(LocationWorker.TAG).build()
-        WorkManager.getInstance().enqueue(locationWork)
+    @SuppressLint("MissingPermission")
+    fun startLocationTracking(
+        pendingIntent: PendingIntent
+    ) {
+        LocationServices.getFusedLocationProviderClient(context).requestLocationUpdates(locationRequest, pendingIntent)
     }
 
-    fun stopLocationTracking() {
-        WorkManager.getInstance().cancelAllWorkByTag(LocationWorker.TAG)
+    fun stopLocationTracking(
+        pendingIntent: PendingIntent
+    ) {
+        LocationServices.getFusedLocationProviderClient(context).removeLocationUpdates(pendingIntent)
     }
+
 
 }
