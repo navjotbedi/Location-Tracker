@@ -9,10 +9,11 @@ Location-Tracker is a Project for tracking location updates and send it to the s
 
 Location Tracker uses a number of open source projects to work properly:
 
-* [Retrofit] - For networking
+* [Retrofit] - For networking purposes
 * [Koin] - Dependency Injection
 * [RxKotlin] - Reactive programming
 * [Play Services] - Fused API for tracking location
+* [Realm] - Storing location updates to DB
 
 ### Installation
 
@@ -28,4 +29,4 @@ Location Tracker requires [Android Studio](https://developer.android.com/studio/
    [Koin]: <https://insert-koin.io/>
    [RxKotlin]: <https://github.com/ReactiveX/RxKotlin>
    [Play Services]: <https://developers.google.com/android/guides/setup>
-   [Twitter Bootstrap]: <https://developer.android.com/studio/install>
+   [Realm]: <https://realm.io/products/realm-database>
